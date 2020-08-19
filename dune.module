@@ -1,0 +1,10 @@
+################################
+# Dune module information file #
+################################
+
+#Name of the module
+Module: projekt
+Version: 1.0
+Maintainer: petrabrcic94@gmail.com
+#depending on
+Depends: dune-common dune-geometry dune-uggrid dune-grid dune-istl dune-localfunctions dune-typetree dune-functions dune-alugrid dune-pdelab
