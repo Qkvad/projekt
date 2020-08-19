@@ -53,18 +53,18 @@
 
 #include<dune/pdelab/gridfunctionspace/vtk.hh>
 
-#define PROBLEM_A
+#define PROBLEM_C
 
-#ifdef PROBLEM_A
-#include "parameterA.hh"
+#ifdef PROBLEM_C
+#include "parameterC.hh"
 #endif
 
 //===============================================================
-// Choose among one of the problems A-F here:
+// Choose among one of the problems A-C here:
 //===============================================================
-#include "parameterA.hh"
-#define PARAMETERCLASS ParameterA
-#define PROBLEMNAME "A"
+#include "parameterC.hh"
+#define PARAMETERCLASS ParameterC
+#define PROBLEMNAME "C"
 
 const bool graphics = true;
 

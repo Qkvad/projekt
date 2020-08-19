@@ -1,5 +1,5 @@
-#ifndef DUNE_PARSOLVE_PROBLEMA_HH
-#define DUNE_PARSOLVE_PROBLEMA_HH
+#ifndef DUNE_PARSOLVE_PROBLEMB_HH
+#define DUNE_PARSOLVE_PROBLEMB_HH
 
 // function for defining the scalar diffusion coefficient
 template<typename GV, typename RF>
@@ -104,18 +104,23 @@ public:
   inline void evaluateGlobal (const typename Traits::DomainType& x,
                                                           typename Traits::RangeType& y) const
   {
-    typename Traits::DomainType xglobal = e.geometry().global(x);
-    // izracunati egzaktno koristeci Laplacea egzaktnog rjesenja
-    double egz = exp(-xglobal[0]-xglobal[1]*xglobal[1]);
-    double Laplace = egz + (4*xglobal[1]*xglobal[1] - 2)*egz;
-    y = -Laplace + c(e,x)*egz;
+      double pow2x = x[0]*x[0];
+      double pow2y = x[1]*x[1];
+      double pow3x = pow2x*x[0];
+      double pow3y = pow2y*x[1];
+      double pow4x = pow3x*x[0];
+      double pow4y = pow3y*x[1];
+      double egz = x[0]*(x[0]-1)*x[1]*(x[1]-1)*exp(-pow2x-pow2y);
+      double Laplace = -2*(2*pow4x - 2*pow3x -5*pow2x + 3*x[0] + 1)*x[1]*(x[1]-1)*exp(-pow2x-pow2y)
+              - 2*(2*pow4y - 2*pow3y -5*pow2y + 3*x[1] + 1)*x[0]*(x[0]-1)*exp(-pow2x-pow2y);
+      y = -Laplace + c(e,x)*egz;
   }
 };
 
 
 
 // constraints parameter class for selecting boundary condition type
-class BCTypeParam_A
+class BCTypeParam_B
   : public Dune::PDELab::FluxConstraintsParameters,
         public Dune::PDELab::DirichletConstraintsParameters
         /*@\label{bcp:base}@*/
@@ -198,7 +203,13 @@ public:
         y = 0;
         for (int i=0; i<GV::dimension; i++)
           if (x[i]<1E-12 || x[i]>1-1E-12)
-            y = - exp(-x[0]-(x[1]*x[1])) - (4*x[1]*x[1] - 2)*exp(-x[0]-(x[1]*x[1]));
+                {
+                  double pow2x = x[0]*x[0];
+                  double pow2y = x[1]*x[1];
+                  y = x[0]*(x[0]-1)*x[1]*(x[1]-1)*exp(-pow2x-pow2y);
+
+                }
+        //y = exp(-x[0]-(x[1]*x[1]));
         return;
   }
 };

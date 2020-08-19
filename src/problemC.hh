@@ -1,5 +1,5 @@
-#ifndef DUNE_PARSOLVE_PROBLEMA_HH
-#define DUNE_PARSOLVE_PROBLEMA_HH
+#ifndef DUNE_PARSOLVE_PROBLEMC_HH
+#define DUNE_PARSOLVE_PROBLEMC_HH
 
 // function for defining the scalar diffusion coefficient
 template<typename GV, typename RF>
@@ -23,7 +23,10 @@ public:
                         const typename Traits::DomainType& x,
                         typename Traits::RangeType& y) const
   {
-        y = 1.0;
+    typename Traits::DomainType xglobal = e.geometry().global(x);
+    y = 1.0;
+    if(xglobal[0]>0 && xglobal[0]<1 && xglobal[1]>0 && xglobal[1]<1) y = 5;
+    if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]<0 && xglobal[1]>-1) y = 5; 
   }
 
   inline const typename Traits::GridViewType& getGridView () const
@@ -57,10 +60,14 @@ public:
                         const typename Traits::DomainType& x,
                         typename Traits::RangeType& y) const
   {
+    typename Traits::DomainType xglobal = e.geometry().global(x);
     for (int i=0; i<GV::dimension; i++)
       for (int j=0; j<GV::dimension; j++)
-        if (i==j)
-          y[i][i] = 1.0;
+        if (i==j){
+            y[i][i] = 1.0;
+            if(xglobal[0]>0 && xglobal[0]<1 && xglobal[1]>0 && xglobal[1]<1) y[i][i] = 5;
+            if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]<0 && xglobal[1]>-1) y[i][i] = 5;
+        }
         else
           y[i][j] = 0.0;
   }
@@ -104,18 +111,41 @@ public:
   inline void evaluateGlobal (const typename Traits::DomainType& x,
                                                           typename Traits::RangeType& y) const
   {
-    typename Traits::DomainType xglobal = e.geometry().global(x);
-    // izracunati egzaktno koristeci Laplacea egzaktnog rjesenja
-    double egz = exp(-xglobal[0]-xglobal[1]*xglobal[1]);
-    double Laplace = egz + (4*xglobal[1]*xglobal[1] - 2)*egz;
-    y = -Laplace + c(e,x)*egz;
+    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+    double theta =  atan(x[1]/x[0]);
+
+    double delta = 0.5354409456;
+    double a, b;
+    double K = 1.0;
+    if(x[0]>0 && x[0]<1 && x[1]>0 && x[1]<1) {
+        a = 0.4472135955;
+        b = 1.0;
+        K = 5.0;
+    }
+    else if(x[0]<0 && x[0]>-1 && x[1]<0 && x[1]>-1) {
+        a = -0.7453559925;
+        b = 2.333333333;
+        K = 5.0;
+    }
+    else if(x[0]<0 && x[0]>-1 && x[1]>0 && x[1]<1) {
+        a = -0.9441175905;
+        b = 0.55555555555;
+    }
+    else  {
+        a = -2.401702653;
+        b = -0.4814814814;
+    }
+    double temp = a*sin(delta*theta) + b*cos(delta*theta);
+    double egz = pow(r,delta) * temp;
+    double Laplace = delta * (delta - 1) * pow(r,delta-2) *temp - pow(delta, 2) * pow(r, delta) * temp;
+    y = - K * Laplace + c(e,x) * egz;
   }
 };
 
 
 
 // constraints parameter class for selecting boundary condition type
-class BCTypeParam_A
+class BCTypeParam_C
   : public Dune::PDELab::FluxConstraintsParameters,
         public Dune::PDELab::DirichletConstraintsParameters
         /*@\label{bcp:base}@*/
@@ -198,7 +228,33 @@ public:
         y = 0;
         for (int i=0; i<GV::dimension; i++)
           if (x[i]<1E-12 || x[i]>1-1E-12)
-            y = - exp(-x[0]-(x[1]*x[1])) - (4*x[1]*x[1] - 2)*exp(-x[0]-(x[1]*x[1]));
+                {
+                    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+                    double theta =  atan(x[1]/x[0]);
+
+                    double delta = 0.5354409456;
+                    double a, b;
+                    if(x[0]>0 && x[0]<1 && x[1]>0 && x[1]<1) {
+                        a = 0.4472135955;
+                        b = 1.0;
+                    }
+                    else if(x[0]<0 && x[0]>-1 && x[1]<0 && x[1]>-1) {
+                        a = -0.7453559925;
+                        b = 2.333333333;
+                    }
+                    else if(x[0]<0 && x[0]>-1 && x[1]>0 && x[1]<1) {
+                        a = -0.9441175905;
+                        b = 0.55555555555;
+                    }
+                    else  {
+                        a = -2.401702653;
+                        b = -0.4814814814;
+                    }
+                    double temp = a*sin(delta*theta) + b*cos(delta*theta);
+                    y = pow(r,delta) * temp;
+
+                }
+        //y = exp(-x[0]-(x[1]*x[1]));
         return;
   }
 };

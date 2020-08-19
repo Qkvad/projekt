@@ -1,8 +1,8 @@
-#ifndef DUNE_PARAMETERA_HH
-#define DUNE_PARAMETERA_HH
+#ifndef DUNE_PARAMETERB_HH
+#define DUNE_PARAMETERB_HH
 
 template<typename GV, typename RF>
-class ParameterA
+class ParameterB
 {
   const GV gv;
   typedef Dune::PDELab::ConvectionDiffusionBoundaryConditions::Type BCType;
@@ -11,11 +11,11 @@ public:
   typedef RF RangeFieldType;
   typedef Dune::PDELab::ConvectionDiffusionParameterTraits<GV,RF> Traits;
 
-  ParameterA( const GV gv_ ) : gv(gv_)
+  ParameterB( const GV gv_ ) : gv(gv_)
   {
   }
 
-  std::string name() const {return "A";};
+  std::string name() const {return "B";};
 
   //! tensor diffusion coefficient
   typename Traits::PermTensorType
@@ -50,9 +50,15 @@ public:
     typename Traits::DomainType xglobal = e.geometry().global(x);
     typename Traits::RangeFieldType norm = xglobal.two_norm2();
     // izracunati egzaktno koristeci Laplacea egzaktnog rjesenja
-
-    double egz = exp(-xglobal[0]-xglobal[1]*xglobal[1]);
-    double Laplace = egz + (4*xglobal[1]*xglobal[1] - 2)*egz;
+    double pow2x = xglobal[0]*xglobal[0];
+    double pow2y = xglobal[1]*xglobal[1];
+    double pow3x = pow2x*xglobal[0];
+    double pow3y = pow2y*xglobal[1];
+    double pow4x = pow3x*xglobal[0];
+    double pow4y = pow3y*xglobal[1];
+    double egz = xglobal[0]*(xglobal[0]-1)*xglobal[1]*(xglobal[1]-1)*exp(-pow2x-pow2y);
+    double Laplace = -2*(2*pow4x - 2*pow3x -5*pow2x + 3*xglobal[0] + 1)*xglobal[1]*(xglobal[1]-1)*exp(-pow2x-pow2y)
+            - 2*(2*pow4y - 2*pow3y -5*pow2y + 3*xglobal[1] + 1)*xglobal[0]*(xglobal[0]-1)*exp(-pow2x-pow2y);
     return -Laplace + c(e,x)*egz;
 
   }
@@ -73,7 +79,9 @@ public:
 
 
     // egzaktno rjesenje
-    return exp(-xglobal[0]-xglobal[1]*xglobal[1]);
+    double pow2x = xglobal[0]*xglobal[0];
+    double pow2y = xglobal[1]*xglobal[1];
+    return xglobal[0]*(xglobal[0]-1)*xglobal[1]*(xglobal[1]-1)*exp(-pow2x-pow2y);
   }
 
   //! Neumann boundary condition
@@ -93,4 +101,4 @@ public:
 };
 
 
-#endif // DUNE_PARAMETERA_HH
+#endif // DUNE_PARAMETERB_HH

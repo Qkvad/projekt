@@ -1,8 +1,10 @@
-#ifndef DUNE_PARAMETERA_HH
-#define DUNE_PARAMETERA_HH
+#ifndef DUNE_PARAMETERC_HH
+#define DUNE_PARAMETERC_HH
+
+#include <cmath>
 
 template<typename GV, typename RF>
-class ParameterA
+class ParameterC
 {
   const GV gv;
   typedef Dune::PDELab::ConvectionDiffusionBoundaryConditions::Type BCType;
@@ -11,7 +13,7 @@ public:
   typedef RF RangeFieldType;
   typedef Dune::PDELab::ConvectionDiffusionParameterTraits<GV,RF> Traits;
 
-  ParameterA( const GV gv_ ) : gv(gv_)
+  ParameterC( const GV gv_ ) : gv(gv_)
   {
   }
 
@@ -25,6 +27,9 @@ public:
     for (std::size_t i=0; i<Traits::dimDomain; i++)
       for (std::size_t j=0; j<Traits::dimDomain; j++)
         I[i][j] = (i==j) ? 1 : 0;
+    typename Traits::DomainType xglobal = e.geometry().global(x);
+    if(xglobal[0]>0 && xglobal[0]<1 && xglobal[1]>0 && xglobal[1]<1) I*= 5;
+    if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]<0 && xglobal[1]>-1) I*= 5;
     return I;
   }
 
@@ -51,10 +56,34 @@ public:
     typename Traits::RangeFieldType norm = xglobal.two_norm2();
     // izracunati egzaktno koristeci Laplacea egzaktnog rjesenja
 
-    double egz = exp(-xglobal[0]-xglobal[1]*xglobal[1]);
-    double Laplace = egz + (4*xglobal[1]*xglobal[1] - 2)*egz;
-    return -Laplace + c(e,x)*egz;
+    double r = std::sqrt(xglobal[0]*xglobal[0] + xglobal[1]*xglobal[1]);
+    double theta =  atan(xglobal[1]/xglobal[0]);
 
+    double delta = 0.5354409456;
+    double a, b;
+    double K = 1.0;
+    if(xglobal[0]>0 && xglobal[0]<1 && xglobal[1]>0 && xglobal[1]<1) {
+        a = 0.4472135955;
+        b = 1.0;
+        K = 5.0;
+    }
+    else if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]<0 && xglobal[1]>-1) {
+        a = -0.7453559925;
+        b = 2.333333333;
+        K = 5.0;
+    }
+    else if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]>0 && xglobal[1]<1) {
+        a = -0.9441175905;
+        b = 0.55555555555;
+    }
+    else  {
+        a = -2.401702653;
+        b = -0.4814814814;
+    }
+    double temp = a*sin(delta*theta) + b*cos(delta*theta);
+    double egz = pow(r,delta) * temp;
+    double Laplace = delta * (delta - 1) * pow(r,delta-2) *temp - pow(delta, 2) * pow(r, delta) * temp;
+    return - K * Laplace + c(e,x) * egz;
   }
 
   //! boundary condition type function
@@ -73,7 +102,29 @@ public:
 
 
     // egzaktno rjesenje
-    return exp(-xglobal[0]-xglobal[1]*xglobal[1]);
+    double r = std::sqrt(xglobal[0]*xglobal[0] + xglobal[1]*xglobal[1]);
+    double theta =  atan(xglobal[1]/xglobal[0]);
+
+    double delta = 0.5354409456;
+    double a, b;
+    if(xglobal[0]>0 && xglobal[0]<1 && xglobal[1]>0 && xglobal[1]<1) {
+        a = 0.4472135955;
+        b = 1.0;
+    }
+    else if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]<0 && xglobal[1]>-1) {
+        a = -0.7453559925;
+        b = 2.333333333;
+    }
+    else if(xglobal[0]<0 && xglobal[0]>-1 && xglobal[1]>0 && xglobal[1]<1) {
+        a = -0.9441175905;
+        b = 0.55555555555;
+    }
+    else  {
+        a = -2.401702653;
+        b = -0.4814814814;
+    }
+    double temp = a*sin(delta*theta) + b*cos(delta*theta);
+    return pow(r,delta) * temp;
   }
 
   //! Neumann boundary condition
@@ -93,4 +144,4 @@ public:
 };
 
 
-#endif // DUNE_PARAMETERA_HH
+#endif // DUNE_PARAMETERC_HH
