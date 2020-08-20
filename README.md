@@ -1,4 +1,4 @@
-# Diskontinuirana metoda konacnih elemenata za eliptisku jednadzbu 
+# Diskontinuirana metoda konacnih elemenata za elipticku jednadzbu 
 
 U ovom radu je prezentirana diskontinuirana Galerkinova metoda konacnih elemenata za tri razlicita primjera eliptickih jednadzbi koja su razlicitke glatkoce i na drugacijim mrezama. 
 
