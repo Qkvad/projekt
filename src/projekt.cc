@@ -53,18 +53,18 @@
 
 #include<dune/pdelab/gridfunctionspace/vtk.hh>
 
-#define PROBLEM_C
+#define PROBLEM_A
 
-#ifdef PROBLEM_C
-#include "parameterC.hh"
+#ifdef PROBLEM_A
+#include "parameterA.hh"
 #endif
 
 //===============================================================
 // Choose among one of the problems A-C here:
 //===============================================================
-#include "parameterC.hh"
-#define PARAMETERCLASS ParameterC
-#define PROBLEMNAME "C"
+#include "parameterA.hh"
+#define PARAMETERCLASS ParameterA
+#define PROBLEMNAME "A"
 
 const bool graphics = true;
 
@@ -252,14 +252,25 @@ int main(int argc, char** argv)
   try {
 
     // 2D YASP:
-    /*if (mesh=="cube" && dim_dyn==2) {
-      const int dim = 2;
-      Dune::FieldVector<Real,dim> L(1.0);
-      Dune::array<int,dim> N(Dune::fill_array<int,dim>(1));
-      std::bitset<dim> P(false);
-      typedef Dune::YaspGrid<dim> Grid;
-      Grid grid(L,N,P,0);
-      typedef Grid::LeafGridView GV;
+    if (mesh=="cube" && dim_dyn==2) {
+//      const int dim = 2;
+//      Dune::FieldVector<Real,dim> L(1.0);
+//      std::array<int,dim> N{10,10};
+//      std::bitset<dim> P(false);
+//      typedef Dune::YaspGrid<dim> Grid;
+//      Grid grid(L,N,P,0);
+//      typedef Grid::LeafGridView GV;
+
+
+        const int dim = 2;
+        std::array<std::vector<double>,2> coords;
+        coords[0] = {-1.0, 1.0};
+        coords[1] = {-1.0, 1.0};
+        typedef Dune::YaspGrid<dim, Dune::TensorProductCoordinates<double,dim>> Grid;
+        Grid grid(coords);
+
+        typedef Grid::LeafGridView GV;
+
 
       // refine grid
       grid.globalRefine( level );
@@ -277,21 +288,21 @@ int main(int argc, char** argv)
         typedef Dune::PDELab::QkDGLocalFiniteElementMap<Grid::ctype,Real,degree,dim> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::QkStuff::QkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
       }
       if (degree_dyn==2) {
         const int degree=2;
         typedef Dune::PDELab::QkDGLocalFiniteElementMap<Grid::ctype,Real,degree,dim> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::QkStuff::QkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
       }
       if (degree_dyn==3) {
         const int degree=3;
         typedef Dune::PDELab::QkDGLocalFiniteElementMap<Grid::ctype,Real,degree,dim> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::QkStuff::QkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
       }
 
     }
@@ -301,7 +312,7 @@ int main(int argc, char** argv)
     if (mesh=="cube" && dim_dyn==3) {
       const int dim = 3;
       Dune::FieldVector<Real,dim> L(1.0);
-      Dune::array<int,dim> N(Dune::fill_array<int,dim>(1));
+      std::array<int,dim> N{10,10,10};
       std::bitset<dim> P(false);
       typedef Dune::YaspGrid<dim> Grid;
       Grid grid(L,N,P,0);
@@ -323,7 +334,7 @@ int main(int argc, char** argv)
         typedef Dune::PDELab::OPBLocalFiniteElementMap<Grid::ctype,Real,degree,dim,Dune::GeometryType::cube> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::PB::PkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
 
       }
       if (degree_dyn==2) {
@@ -331,14 +342,14 @@ int main(int argc, char** argv)
         typedef Dune::PDELab::OPBLocalFiniteElementMap<Grid::ctype,Real,degree,dim,Dune::GeometryType::cube> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::PB::PkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
       }
       if (degree_dyn==3) {
         const int degree=3;
         typedef Dune::PDELab::OPBLocalFiniteElementMap<Grid::ctype,Real,degree,dim,Dune::GeometryType::cube> FEMDG;
         FEMDG femdg;
         const int blocksize = Dune::PB::PkSize<degree,dim>::value;
-        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",2.0);
+        runDG<GV,FEMDG,Problem,degree,blocksize>(gv,femdg,problem,problemlabel,level,method,"ON",alpha);
       }
       if (degree_dyn==4) {
         const int degree=4;
@@ -349,7 +360,7 @@ int main(int argc, char** argv)
       }
 
     }
-*/
+
 
 #if HAVE_DUNE_ALUGRID
     if (mesh=="simplex" && dim_dyn==2) {
@@ -364,6 +375,12 @@ int main(int argc, char** argv)
 //      std::shared_ptr<Grid> grid = Dune::StructuredGridFactory<Grid>::createSimplexGrid(ll, ur, elements);
 //      typedef Grid::LeafGridView GV;
 
+
+      //---------------------------------------------------------------------------------------------------
+      //
+      //    OVDJE TREBA STAVITI ODGOVARAJUCI PATH DO DOMENE - OVAKO JE POSTAVLJENO NA VIRTUALNOJ MASINI
+      //      (ukoliko je odluceno korisiti triangulaciju jedinicnog kvadrata iz primjera 1 i 2)
+      //---------------------------------------------------------------------------------------------------
 
 
       using Grid = Dune::ALUGrid<dim,dim,Dune::simplex,Dune::nonconforming>;

@@ -111,34 +111,35 @@ public:
   inline void evaluateGlobal (const typename Traits::DomainType& x,
                                                           typename Traits::RangeType& y) const
   {
-    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
-    double theta =  atan(x[1]/x[0]);
+//    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+//    double theta =  atan(x[1]/x[0]);
 
-    double delta = 0.5354409456;
-    double a, b;
-    double K = 1.0;
-    if(x[0]>0 && x[0]<1 && x[1]>0 && x[1]<1) {
-        a = 0.4472135955;
-        b = 1.0;
-        K = 5.0;
-    }
-    else if(x[0]<0 && x[0]>-1 && x[1]<0 && x[1]>-1) {
-        a = -0.7453559925;
-        b = 2.333333333;
-        K = 5.0;
-    }
-    else if(x[0]<0 && x[0]>-1 && x[1]>0 && x[1]<1) {
-        a = -0.9441175905;
-        b = 0.55555555555;
-    }
-    else  {
-        a = -2.401702653;
-        b = -0.4814814814;
-    }
-    double temp = a*sin(delta*theta) + b*cos(delta*theta);
-    double egz = pow(r,delta) * temp;
-    double Laplace = delta * (delta - 1) * pow(r,delta-2) *temp - pow(delta, 2) * pow(r, delta) * temp;
-    y = - K * Laplace + c(e,x) * egz;
+//    double delta = 0.5354409456;
+//    double a, b;
+//    double K = 1.0;
+//    if(x[0]>0 && x[0]<1 && x[1]>0 && x[1]<1) {
+//        a = 0.4472135955;
+//        b = 1.0;
+//        K = 5.0;
+//    }
+//    else if(x[0]<0 && x[0]>-1 && x[1]<0 && x[1]>-1) {
+//        a = -0.7453559925;
+//        b = 2.333333333;
+//        K = 5.0;
+//    }
+//    else if(x[0]<0 && x[0]>-1 && x[1]>0 && x[1]<1) {
+//        a = -0.9441175905;
+//        b = 0.55555555555;
+//    }
+//    else  {
+//        a = -2.401702653;
+//        b = -0.4814814814;
+//    }
+//    double temp = a*sin(delta*theta) + b*cos(delta*theta);
+//    double egz = pow(r,delta) * temp;
+//    double Laplace = delta * (delta - 1) * pow(r,delta-2) *temp - pow(delta, 2) * pow(r, delta) * temp;
+//    y = - K * Laplace + c(e,x) * egz;
+      y=0.0;
   }
 };
 
