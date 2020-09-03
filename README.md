@@ -16,6 +16,3 @@ Metodu se moze pokrenuti uz npr sljedece argumente komandne linije
 Parametre za primjer 2 se moze naci u ``src/parameterB.hh`` te odgovarajuci problem je dan u ``src/problemB.hh``.
 Metodu se moze pokrenuti uz npr sljedece argumente komandne linije 
 ```2 simplex 1 NIPG 3 1```
-Parametre za primjer 3 se moze naci u ``src/parameterC.hh`` te odgovarajuci problem je dan u ``src/problemC.hh``.
-Metodu se moze pokrenuti uz npr sljedece argumente komandne linije 
-```2 cube 1 NIPG 3 1```
